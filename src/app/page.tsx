@@ -2,14 +2,17 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { getRequests } from "@/lib/storage";
 import { PetRequest } from "@/lib/types";
 
 export default function HomePage() {
   const [requests, setRequests] = useState<PetRequest[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setRequests(getRequests());
+    fetch("/api/requests")
+      .then((res) => res.json())
+      .then((data) => setRequests(data.requests ?? []))
+      .finally(() => setLoading(false));
   }, []);
 
   const open = requests.filter((r) => r.status === "open");
@@ -24,7 +27,9 @@ export default function HomePage() {
         </p>
       </div>
 
-      {open.length === 0 ? (
+      {loading ? (
+        <p className="text-stone-500">Loading…</p>
+      ) : open.length === 0 ? (
         <p className="rounded-lg border border-dashed border-amber-300 bg-white px-4 py-8 text-center text-stone-500">
           No open requests yet.{" "}
           <Link href="/post" className="text-amber-700 underline">
@@ -44,7 +49,7 @@ export default function HomePage() {
                   <div>
                     <p className="font-semibold text-stone-900">{r.title}</p>
                     <p className="text-sm text-stone-500">
-                      {r.petType} · posted by {r.posterName}
+                      {r.pet_type} · posted by {r.poster_name}
                     </p>
                   </div>
                   <span className="whitespace-nowrap rounded-full bg-amber-100 px-3 py-1 text-sm font-medium text-amber-800">
@@ -70,7 +75,7 @@ export default function HomePage() {
                   <div>
                     <p className="font-semibold text-stone-700">{r.title}</p>
                     <p className="text-sm text-stone-500">
-                      {r.petType} · {r.responderName} is on it
+                      {r.pet_type} · {r.responder_name} is on it
                     </p>
                   </div>
                   <span className="whitespace-nowrap rounded-full bg-stone-200 px-3 py-1 text-sm font-medium text-stone-600">

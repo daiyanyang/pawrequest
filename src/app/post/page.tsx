@@ -2,33 +2,61 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { addRequest } from "@/lib/storage";
-import { getDeviceId } from "@/lib/device";
+import Link from "next/link";
+import { useAuth } from "@/components/AuthProvider";
 
 export default function PostRequestPage() {
   const router = useRouter();
+  const { user, loading } = useAuth();
   const [title, setTitle] = useState("");
   const [petType, setPetType] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
   const [posterName, setPosterName] = useState("");
   const [posterContact, setPosterContact] = useState("");
+  const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    addRequest({
-      id: crypto.randomUUID(),
-      title,
-      petType,
-      description,
-      price: Number(price) || 0,
-      posterName,
-      posterContact,
-      ownerId: getDeviceId(),
-      createdAt: new Date().toISOString(),
-      status: "open",
+    setError("");
+    setSubmitting(true);
+
+    const res = await fetch("/api/requests", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        title,
+        petType,
+        description,
+        price,
+        posterName,
+        posterContact,
+      }),
     });
+    setSubmitting(false);
+
+    if (!res.ok) {
+      const data = await res.json();
+      setError(data.error ?? "Something went wrong.");
+      return;
+    }
+
     router.push("/");
+  }
+
+  if (loading) return null;
+
+  if (!user) {
+    return (
+      <p className="rounded-lg border border-dashed border-amber-300 bg-white px-4 py-8 text-center text-stone-500">
+        You&apos;ll need to{" "}
+        <Link href="/login" className="text-amber-700 underline">
+          sign in
+        </Link>{" "}
+        before posting a request.
+      </p>
+    );
   }
 
   return (
@@ -112,11 +140,14 @@ export default function PostRequestPage() {
           />
         </div>
 
+        {error && <p className="text-sm text-red-600">{error}</p>}
+
         <button
           type="submit"
-          className="w-full rounded-full bg-amber-600 px-4 py-2.5 font-medium text-white hover:bg-amber-700"
+          disabled={submitting}
+          className="w-full rounded-full bg-amber-600 px-4 py-2.5 font-medium text-white hover:bg-amber-700 disabled:opacity-60"
         >
-          Post request
+          {submitting ? "Posting…" : "Post request"}
         </button>
       </form>
     </div>

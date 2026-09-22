@@ -2,24 +2,47 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { getRequests } from "@/lib/storage";
-import { getDeviceId } from "@/lib/device";
+import { useAuth } from "@/components/AuthProvider";
 import { PetRequest } from "@/lib/types";
 
 export default function MyRequestsPage() {
+  const { user, loading: authLoading } = useAuth();
   const [mine, setMine] = useState<PetRequest[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const deviceId = getDeviceId();
-    setMine(getRequests().filter((r) => r.ownerId === deviceId));
-  }, []);
+    if (authLoading) return;
+    if (!user) {
+      setLoading(false);
+      return;
+    }
+    fetch("/api/requests/mine")
+      .then((res) => res.json())
+      .then((data) => setMine(data.requests ?? []))
+      .finally(() => setLoading(false));
+  }, [user, authLoading]);
+
+  if (authLoading || loading) return null;
+
+  if (!user) {
+    return (
+      <p className="rounded-lg border border-dashed border-amber-300 bg-white px-4 py-8 text-center text-stone-500">
+        You&apos;ll need to{" "}
+        <Link href="/login" className="text-amber-700 underline">
+          sign in
+        </Link>{" "}
+        to see your requests.
+      </p>
+    );
+  }
 
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-stone-900">My requests</h1>
         <p className="mt-1 text-sm text-stone-500">
-          Everything you&apos;ve posted from this device, and whether anyone&apos;s picked it up.
+          Everything you&apos;ve posted, and whether anyone&apos;s picked it up — signed in as{" "}
+          {user.email}.
         </p>
       </div>
 
@@ -41,7 +64,7 @@ export default function MyRequestsPage() {
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <p className="font-semibold text-stone-900">{r.title}</p>
-                  <p className="text-sm text-stone-500">{r.petType}</p>
+                  <p className="text-sm text-stone-500">{r.pet_type}</p>
                 </div>
                 <span className="whitespace-nowrap rounded-full bg-amber-100 px-3 py-1 text-sm font-medium text-amber-800">
                   ${r.price}
@@ -55,10 +78,10 @@ export default function MyRequestsPage() {
               ) : (
                 <div className="mt-3 rounded-md bg-stone-50 p-3 text-sm text-stone-700">
                   <p className="font-medium">
-                    {r.responderName} said they&apos;ll take it!
+                    {r.responder_name} said they&apos;ll take it!
                   </p>
                   <p className="mt-1 text-stone-500">
-                    Reach them at {r.responderContact}
+                    Reach them at {r.responder_contact}
                   </p>
                 </div>
               )}

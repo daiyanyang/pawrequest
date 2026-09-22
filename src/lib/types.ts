@@ -1,14 +1,15 @@
 export type PetRequest = {
   id: string;
   title: string;
-  petType: string;
+  pet_type: string;
   description: string;
-  price: number;
-  posterName: string;
-  posterContact: string;
-  ownerId: string;
-  createdAt: string;
+  price: string;
   status: "open" | "claimed";
-  responderName?: string;
-  responderContact?: string;
+  poster_id: string;
+  poster_name: string;
+  poster_contact: string;
+  responder_id: string | null;
+  responder_name: string | null;
+  responder_contact: string | null;
+  created_at: string;
 };
