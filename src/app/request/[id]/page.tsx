@@ -88,6 +88,14 @@ export default function RequestDetailPage() {
           </Link>{" "}
           before you can respond.
         </p>
+      ) : user.id === request.poster_id ? (
+        <p className="rounded-lg bg-stone-100 px-4 py-6 text-center text-stone-500">
+          This is your own request — check{" "}
+          <Link href="/my-requests" className="text-amber-700 underline">
+            My requests
+          </Link>{" "}
+          to see if anyone&apos;s picked it up.
+        </p>
       ) : (
         <form
           onSubmit={handleRespond}
