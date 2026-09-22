@@ -19,12 +19,20 @@ export default function RootLayout({
             <a href="/" className="text-lg font-semibold text-amber-700">
               🐾 PawRequest
             </a>
-            <a
-              href="/post"
-              className="rounded-full bg-amber-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-amber-700"
-            >
-              Post a request
-            </a>
+            <div className="flex items-center gap-4">
+              <a
+                href="/my-requests"
+                className="text-sm font-medium text-amber-700 hover:underline"
+              >
+                My requests
+              </a>
+              <a
+                href="/post"
+                className="rounded-full bg-amber-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-amber-700"
+              >
+                Post a request
+              </a>
+            </div>
           </div>
         </header>
         <main className="mx-auto max-w-2xl px-4 py-8">{children}</main>

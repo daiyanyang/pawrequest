@@ -6,6 +6,7 @@ export type PetRequest = {
   price: number;
   posterName: string;
   posterContact: string;
+  ownerId: string;
   createdAt: string;
   status: "open" | "claimed";
   responderName?: string;

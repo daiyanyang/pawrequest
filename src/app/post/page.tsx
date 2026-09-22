@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { addRequest } from "@/lib/storage";
+import { getDeviceId } from "@/lib/device";
 
 export default function PostRequestPage() {
   const router = useRouter();
@@ -23,6 +24,7 @@ export default function PostRequestPage() {
       price: Number(price) || 0,
       posterName,
       posterContact,
+      ownerId: getDeviceId(),
       createdAt: new Date().toISOString(),
       status: "open",
     });
