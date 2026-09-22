@@ -21,7 +21,7 @@ export default function HomePage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-bold text-stone-900">Open requests</h1>
+        <h1 className="text-2xl font-bold text-stone-900">🐾 Open requests</h1>
         <p className="mt-1 text-sm text-stone-500">
           Someone&apos;s out and their pet needs a hand. Browse what&apos;s open, or lend a paw.
         </p>
